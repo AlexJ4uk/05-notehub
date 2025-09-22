@@ -1,23 +1,43 @@
 import axios from "axios";
-import type { createTaskRequest, Task, updateTaskRequest } from "../types/note";
+import type { Note, createNoteRequest } from "../types/note.ts";
 
-axios.defaults.baseURL = "https://62584f320c918296a49543e7.mockapi.io";
+const BASE_URL = "https://notehub-public.goit.study/api"
+const myToken = import.meta.env.VITE_NOTEHUB_TOKEN;
 
-export const getTasks = async () => {
-  const res = await axios.get<Task[]>("/tasks");
-  return res.data;
-};
-
-export const createTask = async (data: createTaskRequest) => {
-  const res = await axios.post<Task>("/tasks", data);
-  return res.data;
-};
-
-export const updateTask = async (data: updateTaskRequest) => {
-  const res = await axios.put<Task>(`/tasks/${data.id}`, data);
-  return res.data;
+export interface FetchNotesParams {
+  page?: number,
+  perPage?: number,
+  search?: string
 }
 
-export const deleteTask = async (taskId: string) => {
-  await axios.delete<Task>(`/tasks/${taskId}`);
+export interface FetchNotesResponse {
+  notes: Note[],
+  totalPages: number,
+}
+
+const api = axios.create({
+  baseURL: BASE_URL,
+  headers: {
+    Authorization: `Bearer ${myToken}`,
+  },
+});
+
+
+export const fetchNotes = async ({
+  page = 1,
+  perPage = 10,
+  search }: FetchNotesParams): Promise<FetchNotesResponse> => {
+  
+  const res = await api.get<FetchNotesResponse>(BASE_URL, {params: {page, perPage, search}});
+  return res.data;
+};
+
+export const createNote = async (note: createNoteRequest): Promise<Note> => {
+  const res = await api.post<Note>(BASE_URL, note);
+  return res.data;
+};
+
+export const deleteNote = async (id: string): Promise<Note> => {
+  const res = await api.delete<Note>(`${BASE_URL}/${id}`);
+  return res.data;
 }

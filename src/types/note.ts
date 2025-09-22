@@ -1,15 +1,16 @@
-export interface Task {
-    id: string;
-    text: string;
-    completed: boolean;
+export interface Note {
+    id: string,
+    title: string,
+      content: string,
+      createdAt: string,
+      updatedAt: string,
+      tag: noteTag,
 }
 
-export interface createTaskRequest {
-    text: string;
-}
+export type noteTag = "Work" | "Personal" | "Meeting" | "Shopping" | "Todo";
 
-export interface updateTaskRequest {
-    id: string;
-    text?: string;
-    completed?: boolean;
+export interface createNoteRequest {
+    title: string,
+    content: string,
+    tag: noteTag,
 }
